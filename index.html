@@ -1,0 +1,1687 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Life Countdown Calculator</title>
+  <style>
+    * {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+    }
+    
+    body {
+      font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
+      background: #f5f5f5;
+      padding: 1rem;
+      color: #1a1a1a;
+      min-height: 100vh;
+    }
+    
+    .container {
+      max-width: 1000px;
+      margin: 0 auto;
+    }
+    
+    #quiz-form, #results-container {
+      background: white;
+      border-radius: 12px;
+      padding: 2rem;
+      box-shadow: 0 1px 3px rgba(0,0,0,0.1);
+    }
+    
+    .progress {
+      margin-bottom: 1.5rem;
+    }
+    
+    .progress-info {
+      display: flex;
+      justify-content: space-between;
+      font-size: 12px;
+      color: #666;
+      margin-bottom: 0.5rem;
+    }
+    
+    .progress-bar {
+      width: 100%;
+      height: 4px;
+      background: #e0e0e0;
+      border-radius: 2px;
+      overflow: hidden;
+    }
+    
+    .progress-fill {
+      height: 100%;
+      background: #378ADD;
+      transition: width 0.3s;
+    }
+    
+    .question-container {
+      margin-bottom: 1.5rem;
+    }
+    
+    label {
+      display: block;
+      font-size: 16px;
+      font-weight: 500;
+      margin-bottom: 1rem;
+      color: #1a1a1a;
+    }
+    
+    input, select {
+      width: 100%;
+      padding: 0.75rem;
+      font-size: 16px;
+      border: 0.5px solid #d0d0d0;
+      border-radius: 8px;
+      font-family: inherit;
+    }
+    
+    input:focus, select:focus {
+      outline: none;
+      border-color: #378ADD;
+      box-shadow: 0 0 0 2px rgba(55, 138, 221, 0.1);
+    }
+    
+    .button-group {
+      display: flex;
+      gap: 12px;
+      margin-top: 1.5rem;
+    }
+    
+    button {
+      flex: 1;
+      padding: 0.75rem;
+      border: 0.5px solid #d0d0d0;
+      background: white;
+      border-radius: 8px;
+      font-size: 14px;
+      cursor: pointer;
+      transition: all 0.2s;
+    }
+    
+    button:hover:not(:disabled) {
+      background: #f5f5f5;
+      border-color: #999;
+    }
+    
+    button:active:not(:disabled) {
+      transform: scale(0.98);
+    }
+    
+    button:disabled {
+      opacity: 0.5;
+      cursor: not-allowed;
+    }
+    
+    .results-headline {
+      background: #f0f4f8;
+      border-radius: 12px;
+      padding: 2rem 1.5rem;
+      margin-bottom: 1.5rem;
+      text-align: center;
+    }
+    
+    .headline-label {
+      font-size: 13px;
+      color: #666;
+      margin-bottom: 1.5rem;
+    }
+    
+    .toggle-buttons {
+      display: flex;
+      gap: 8px;
+      margin-bottom: 1.5rem;
+      flex-wrap: wrap;
+      justify-content: center;
+    }
+    
+    .toggle-btn {
+      padding: 0.5rem 1rem;
+      font-size: 13px;
+      border: 0.5px solid #d0d0d0;
+      background: white;
+      flex: 0 1 auto;
+    }
+    
+    .toggle-btn.active {
+      border-color: #378ADD;
+      background: #f0f4f8;
+      font-weight: 500;
+    }
+    
+    .countdown-display {
+      display: grid;
+      grid-template-columns: 1fr 1fr 1fr;
+      gap: 16px;
+      margin-bottom: 2rem;
+    }
+    
+    .countdown-unit {
+      text-align: center;
+    }
+    
+    .countdown-value {
+      font-size: 56px;
+      font-weight: 500;
+      margin: 0;
+      color: #1a1a1a;
+    }
+    
+    .countdown-label {
+      font-size: 12px;
+      color: #666;
+      margin: 0.5rem 0 0 0;
+    }
+    
+    .estimate-note {
+      font-size: 12px;
+      color: #666;
+      margin: 0;
+      padding-top: 1rem;
+      border-top: 0.5px solid #e0e0e0;
+    }
+    
+    .estimate-note strong {
+      font-weight: 500;
+    }
+    
+    .factors-container {
+      background: white;
+      border-radius: 12px;
+      border: 0.5px solid #e0e0e0;
+      padding: 1.5rem;
+      margin-bottom: 1.5rem;
+    }
+    
+    .factors-title {
+      font-size: 14px;
+      font-weight: 500;
+      margin: 0 0 1rem 0;
+    }
+    
+    .factors-list {
+      display: flex;
+      flex-direction: column;
+      gap: 0;
+    }
+    
+    .factor-row {
+      display: flex;
+      justify-content: space-between;
+      padding: 0.75rem 0;
+      border-bottom: 0.5px solid #e0e0e0;
+      font-size: 14px;
+    }
+    
+    .factor-row:last-child {
+      border-bottom: none;
+    }
+    
+    .factor-label {
+      color: #666;
+    }
+    
+    .factor-value {
+      font-weight: 500;
+    }
+    
+    .edit-button {
+      width: 100%;
+      margin-top: 1.5rem;
+    }
+  </style>
+</head>
+<body>
+  <div class="container">
+    <div id="quiz-container">
+      <form id="quiz-form">
+        <div class="progress">
+          <div class="progress-info">
+            <span id="progress-text">Question 1 of 18</span>
+            <span id="progress-percent">0%</span>
+          </div>
+          <div class="progress-bar">
+            <div id="progress-bar" class="progress-fill" style="width: 6%;"></div>
+          </div>
+        </div>
+
+        <div id="question-container" class="question-container"></div>
+        
+        <div class="button-group">
+          <button type="button" id="prev-btn">← Back</button>
+          <button type="button" id="next-btn">Next →</button>
+        </div>
+      </form>
+
+      <div id="results-container" style="display: none;">
+        <div style="display: flex; gap: 4px; background: #f0f0f0; padding: 4px; border-radius: 10px; margin-bottom: 1.5rem;">
+          <button type="button" id="tab-countdown" class="view-tab active" style="flex: 1; padding: 0.6rem; font-size: 13px; font-weight: 500; border: none; background: white; border-radius: 7px; cursor: pointer; box-shadow: 0 1px 2px rgba(0,0,0,0.05);">Countdown</button>
+          <button type="button" id="tab-life" class="view-tab" style="flex: 1; padding: 0.6rem; font-size: 13px; font-weight: 400; border: none; background: transparent; border-radius: 7px; cursor: pointer; color: #666;">Your life</button>
+          <button type="button" id="tab-factors-stacked" class="view-tab" style="flex: 1; padding: 0.6rem; font-size: 13px; font-weight: 400; border: none; background: transparent; border-radius: 7px; cursor: pointer; color: #666;">Key factors</button>
+        </div>
+
+        <div id="view-countdown">
+        <div class="results-headline" style="background: #FF9500; border-radius: 12px; padding: 1.5rem; text-align: center; margin-bottom: 1.5rem;">
+          <div style="display: grid; grid-template-columns: repeat(5, 1fr); gap: 8px; margin-bottom: 0.5rem;">
+            <div style="font-family: 'Courier New', monospace; font-size: 10px; color: rgba(0,0,0,0.7); text-transform: uppercase; letter-spacing: 1px;">Years</div>
+            <div style="font-family: 'Courier New', monospace; font-size: 10px; color: rgba(0,0,0,0.7); text-transform: uppercase; letter-spacing: 1px;">Days</div>
+            <div style="font-family: 'Courier New', monospace; font-size: 10px; color: rgba(0,0,0,0.7); text-transform: uppercase; letter-spacing: 1px;">Hours</div>
+            <div style="font-family: 'Courier New', monospace; font-size: 10px; color: rgba(0,0,0,0.7); text-transform: uppercase; letter-spacing: 1px;">Mins</div>
+            <div style="font-family: 'Courier New', monospace; font-size: 10px; color: rgba(0,0,0,0.7); text-transform: uppercase; letter-spacing: 1px;">Secs</div>
+          </div>
+          
+          <div style="display: grid; grid-template-columns: repeat(5, 1fr); gap: 8px; align-items: center;">
+            <div style="font-family: 'Courier New', 'Monaco', monospace; font-size: 38px; font-weight: 700; color: #1a1a1a; letter-spacing: 1px;"><span id="counter-years">00</span></div>
+            <div style="font-family: 'Courier New', 'Monaco', monospace; font-size: 38px; font-weight: 700; color: #1a1a1a; letter-spacing: 1px;"><span id="counter-days">000</span></div>
+            <div style="font-family: 'Courier New', 'Monaco', monospace; font-size: 38px; font-weight: 700; color: #1a1a1a; letter-spacing: 1px;"><span id="counter-hours">00</span></div>
+            <div style="font-family: 'Courier New', 'Monaco', monospace; font-size: 38px; font-weight: 700; color: #1a1a1a; letter-spacing: 1px;"><span id="counter-mins">00</span></div>
+            <div style="font-family: 'Courier New', 'Monaco', monospace; font-size: 38px; font-weight: 700; color: #1a1a1a; letter-spacing: 1px;"><span id="counter-secs">00</span></div>
+          </div>
+          
+          <p style="font-size: 12px; color: rgba(0,0,0,0.7); margin: 0.75rem 0 0 0;">time remaining</p>
+        </div>
+
+        <div id="stopwatch-bars" style="background: white; border-radius: 12px; border: 0.5px solid #e0e0e0; padding: 1.5rem; margin-bottom: 1.5rem;">
+          <div class="bar-row" style="margin-bottom: 1rem;">
+            <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 0.35rem;">
+              <span style="font-size: 11px; color: #999; text-transform: uppercase; letter-spacing: 0.5px;">Years</span>
+              <span style="font-size: 13px; font-weight: 500; color: #1a1a1a; font-family: 'Courier New', monospace;"><span id="bar-years-val">0</span> / <span id="bar-years-max">0</span></span>
+            </div>
+            <div style="width: 100%; height: 10px; background: #f0f0f0; border-radius: 5px; overflow: hidden;">
+              <div id="bar-years-fill" style="height: 100%; background: linear-gradient(to right, #FF9500, #FF6B6B); width: 0%; transition: width 0.5s linear; border-radius: 5px;"></div>
+            </div>
+          </div>
+          
+          <div class="bar-row" style="margin-bottom: 1rem;">
+            <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 0.35rem;">
+              <span style="font-size: 11px; color: #999; text-transform: uppercase; letter-spacing: 0.5px;">Days</span>
+              <span style="font-size: 13px; font-weight: 500; color: #1a1a1a; font-family: 'Courier New', monospace;"><span id="bar-days-val">0</span> / 365</span>
+            </div>
+            <div style="width: 100%; height: 10px; background: #f0f0f0; border-radius: 5px; overflow: hidden;">
+              <div id="bar-days-fill" style="height: 100%; background: linear-gradient(to right, #FF9500, #FF6B6B); width: 0%; transition: width 0.5s linear; border-radius: 5px;"></div>
+            </div>
+          </div>
+          
+          <div class="bar-row" style="margin-bottom: 1rem;">
+            <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 0.35rem;">
+              <span style="font-size: 11px; color: #999; text-transform: uppercase; letter-spacing: 0.5px;">Hours</span>
+              <span style="font-size: 13px; font-weight: 500; color: #1a1a1a; font-family: 'Courier New', monospace;"><span id="bar-hours-val">0</span> / 24</span>
+            </div>
+            <div style="width: 100%; height: 10px; background: #f0f0f0; border-radius: 5px; overflow: hidden;">
+              <div id="bar-hours-fill" style="height: 100%; background: linear-gradient(to right, #FF9500, #FF6B6B); width: 0%; transition: width 0.5s linear; border-radius: 5px;"></div>
+            </div>
+          </div>
+          
+          <div class="bar-row" style="margin-bottom: 1rem;">
+            <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 0.35rem;">
+              <span style="font-size: 11px; color: #999; text-transform: uppercase; letter-spacing: 0.5px;">Minutes</span>
+              <span style="font-size: 13px; font-weight: 500; color: #1a1a1a; font-family: 'Courier New', monospace;"><span id="bar-mins-val">0</span> / 60</span>
+            </div>
+            <div style="width: 100%; height: 10px; background: #f0f0f0; border-radius: 5px; overflow: hidden;">
+              <div id="bar-mins-fill" style="height: 100%; background: linear-gradient(to right, #FF9500, #FF6B6B); width: 0%; transition: width 0.5s linear; border-radius: 5px;"></div>
+            </div>
+          </div>
+          
+          <div class="bar-row" style="margin-bottom: 0;">
+            <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 0.35rem;">
+              <span style="font-size: 11px; color: #999; text-transform: uppercase; letter-spacing: 0.5px;">Seconds</span>
+              <span style="font-size: 13px; font-weight: 500; color: #1a1a1a; font-family: 'Courier New', monospace;"><span id="bar-secs-val">0</span> / 60</span>
+            </div>
+            <div style="width: 100%; height: 10px; background: #f0f0f0; border-radius: 5px; overflow: hidden;">
+              <div id="bar-secs-fill" style="height: 100%; background: linear-gradient(to right, #FF9500, #FF6B6B); width: 0%; transition: width 0.1s linear; border-radius: 5px;"></div>
+            </div>
+          </div>
+          
+          <p style="font-size: 11px; color: #999; margin: 1rem 0 0 0; padding-top: 1rem; border-top: 0.5px solid #e0e0e0;">Estimated age at life expectancy: <strong id="life-expectancy-age" style="color: #1a1a1a;">78</strong></p>
+        </div>
+        </div>
+
+        <div id="view-life" style="display: none;">
+
+        <div style="background: white; border-radius: 12px; border: 0.5px solid #e0e0e0; padding: 1.5rem; margin-bottom: 1.5rem;">
+          <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 0.5rem;">
+            <p style="font-size: 14px; font-weight: 500; margin: 0;">Your life in <span id="grid-unit-name">years</span></p>
+            <p id="grid-breadcrumb" style="font-size: 12px; color: #666; margin: 0;"></p>
+          </div>
+          
+          <p id="grid-summary" style="font-size: 12px; color: #888; margin: 0 0 1rem 0; line-height: 1.5;">You've lived <strong id="grid-summary-lived">0</strong> of an estimated <strong id="grid-summary-total">0</strong> <span id="grid-summary-unit">years</span> <span id="grid-summary-percent" style="color: #FF375F;">(0%)</span></p>
+          
+          <div style="display: flex; gap: 6px; margin-bottom: 1rem;">
+            <button type="button" class="grid-btn active" data-view="years" style="padding: 0.4rem 0.75rem; font-size: 12px; border: 0.5px solid #378ADD; background: #f0f4f8; border-radius: 6px; cursor: pointer; flex: 1; font-weight: 500;">Years</button>
+            <button type="button" class="grid-btn" data-view="months" style="padding: 0.4rem 0.75rem; font-size: 12px; border: 0.5px solid #d0d0d0; background: white; border-radius: 6px; cursor: pointer; flex: 1;">Months</button>
+            <button type="button" class="grid-btn" data-view="weeks" style="padding: 0.4rem 0.75rem; font-size: 12px; border: 0.5px solid #d0d0d0; background: white; border-radius: 6px; cursor: pointer; flex: 1;">Weeks</button>
+          </div>
+
+          <div id="grid-tooltip" style="position: fixed; background: #1a1a1a; color: white; padding: 6px 10px; border-radius: 6px; font-size: 11px; pointer-events: none; opacity: 0; transition: opacity 0.15s; z-index: 100; white-space: nowrap;"></div>
+
+          <div id="grid-container" style="margin-top: 1rem; transition: opacity 0.3s ease; height: 70vh; min-height: 400px; overflow: hidden; display: flex; align-items: stretch; justify-content: center;"></div>
+          
+          <div style="margin-top: 1.5rem; padding-top: 1rem; border-top: 0.5px solid #e0e0e0;">
+            <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 0.75rem;">
+              <p style="font-size: 12px; color: #666; margin: 0; font-weight: 500;">Life phases</p>
+              <button type="button" id="add-phase-btn" style="font-size: 11px; padding: 0.25rem 0.5rem; border: 0.5px solid #d0d0d0; background: white; border-radius: 4px; cursor: pointer;">+ Add phase</button>
+            </div>
+            <div id="phases-list" style="display: flex; flex-direction: column; gap: 0.4rem; margin-bottom: 0.75rem;"></div>
+          </div>
+
+          <div style="display: flex; gap: 16px; margin-top: 1rem; padding-top: 1rem; border-top: 0.5px solid #e0e0e0; font-size: 11px; color: #666; flex-wrap: wrap;">
+            <div style="display: flex; align-items: center; gap: 6px;">
+              <div style="width: 10px; height: 10px; background: #5a5a5a; border-radius: 2px;"></div>
+              <span>Lived</span>
+            </div>
+            <div style="display: flex; align-items: center; gap: 6px;">
+              <div style="width: 10px; height: 10px; background: #FF375F; border-radius: 2px;"></div>
+              <span>Current</span>
+            </div>
+            <div style="display: flex; align-items: center; gap: 6px;">
+              <div style="width: 10px; height: 10px; background: white; border: 0.5px solid #d0d0d0; border-radius: 2px;"></div>
+              <span>Remaining</span>
+            </div>
+            <span style="color: #999; font-size: 10px; margin-left: auto;">↑↓←→ to navigate</span>
+          </div>
+        </div>
+        </div>
+
+        <div id="view-factors-stacked" style="display: none;">
+          <div style="background: white; border-radius: 12px; border: 0.5px solid #e0e0e0; padding: 1.5rem; margin-bottom: 1.5rem;">
+            <p style="font-size: 14px; font-weight: 500; margin: 0 0 1rem 0;">Your answers</p>
+            <p style="font-size: 12px; color: #888; margin: 0 0 1rem 0;">Click the edit icon next to any answer to update it. Your countdown will recalculate immediately.</p>
+            <div id="factors-list-stacked" style="display: flex; flex-direction: column;"></div>
+          </div>
+
+          <div style="background: white; border-radius: 12px; border: 0.5px solid #fecaca; padding: 1.5rem; margin-bottom: 1.5rem;">
+            <p style="font-size: 14px; font-weight: 500; margin: 0 0 0.5rem 0; color: #dc2626;">Restart questionnaire</p>
+            <p style="font-size: 12px; color: #888; margin: 0 0 1rem 0;">This will clear all your answers and take you back through the questionnaire from the beginning.</p>
+            <button type="button" id="restart-btn-stacked" style="padding: 0.5rem 1rem; font-size: 13px; border: 0.5px solid #dc2626; background: white; color: #dc2626; border-radius: 6px; cursor: pointer;">Restart</button>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <script>
+    const questions = [
+      { id: 'birthDate', type: 'date', label: 'What is your date of birth?' },
+      { id: 'gender', type: 'select', label: 'What is your gender?', options: ['Male', 'Female', 'Other'] },
+      { id: 'country', type: 'select', label: 'What country do you live in?', options: ['United States', 'United Kingdom', 'Canada', 'Australia', 'Germany', 'France', 'Japan', 'Other'] },
+      { id: 'smoking', type: 'select', label: 'Do you smoke?', options: ['Never', 'Quit 5+ years ago', 'Quit recently', 'Occasionally', 'Daily'] },
+      { id: 'weight', type: 'number', label: 'What is your weight in pounds?', min: 80, max: 400 },
+      { id: 'height', type: 'number', label: 'What is your height in inches?', min: 36, max: 96 },
+      { id: 'exercise', type: 'select', label: 'How often do you exercise?', options: ['Rarely/Never', '1-2 times per week', '3-4 times per week', '5+ times per week'] },
+      { id: 'diet', type: 'select', label: 'How would you describe your diet?', options: ['Poor', 'Fair', 'Good', 'Excellent'] },
+      { id: 'alcohol', type: 'select', label: 'How much alcohol do you drink?', options: ['None', 'Light (1-2 drinks/week)', 'Moderate (3-7 drinks/week)', 'Heavy (8+ drinks/week)'] },
+      { id: 'stress', type: 'select', label: 'How would you rate your stress level?', options: ['Low', 'Moderate', 'High', 'Very high'] },
+      { id: 'sleep', type: 'number', label: 'How many hours of sleep do you get per night?', min: 2, max: 12 },
+      { id: 'familyHealth', type: 'select', label: 'Has anyone in your family lived past 90?', options: ['Yes', 'No', 'Not sure'] },
+      { id: 'chronicDiseases', type: 'select', label: 'Do you have any chronic diseases?', options: ['No', 'Yes - 1 condition', 'Yes - 2+ conditions'] },
+      { id: 'mentalHealth', type: 'select', label: 'How is your mental health?', options: ['Excellent', 'Good', 'Fair', 'Poor'] },
+      { id: 'socialConnections', type: 'select', label: 'Do you have strong social connections?', options: ['Very strong', 'Strong', 'Moderate', 'Weak'] },
+      { id: 'education', type: 'select', label: 'What is your highest level of education?', options: ['High school or less', 'Some college', 'College degree', 'Advanced degree'] },
+      { id: 'income', type: 'select', label: 'How would you describe your income?', options: ['Low', 'Lower-middle', 'Middle', 'Upper-middle', 'High'] },
+      { id: 'optimism', type: 'select', label: 'How optimistic are you about your future?', options: ['Very pessimistic', 'Pessimistic', 'Neutral', 'Optimistic', 'Very optimistic'] }
+    ];
+
+    let currentQuestion = 0;
+    const answers = JSON.parse(localStorage.getItem('lifeCalcAnswers')) || {};
+    let deathDate = null;
+    let currentFormat = 'hours-minutes-seconds';
+    let gridView = 'years';
+    let drillDownYear = null;
+    let drillDownMonth = null;
+
+    const lifeExpectancyByCountry = {
+      'United States': 76.1,
+      'United Kingdom': 81.3,
+      'Canada': 82.2,
+      'Australia': 82.9,
+      'Germany': 81.3,
+      'France': 82.3,
+      'Japan': 84.5,
+      'Other': 78.5
+    };
+
+    const genderMultiplier = {
+      'Male': 0.98,
+      'Female': 1.05,
+      'Other': 1.0
+    };
+
+    function renderQuestion() {
+      const q = questions[currentQuestion];
+      const container = document.getElementById('question-container');
+      container.innerHTML = '';
+      
+      const label = document.createElement('label');
+      label.textContent = q.label;
+      container.appendChild(label);
+
+      let input;
+      if (q.type === 'date') {
+        input = document.createElement('input');
+        input.type = 'date';
+        input.id = q.id;
+        input.value = answers[q.id] || '';
+      } else if (q.type === 'select') {
+        input = document.createElement('select');
+        input.id = q.id;
+        input.value = answers[q.id] || '';
+        
+        const placeholder = document.createElement('option');
+        placeholder.value = '';
+        placeholder.textContent = 'Select an option...';
+        input.appendChild(placeholder);
+        
+        q.options.forEach(opt => {
+          const option = document.createElement('option');
+          option.value = opt;
+          option.textContent = opt;
+          input.appendChild(option);
+        });
+      } else if (q.type === 'number') {
+        input = document.createElement('input');
+        input.type = 'number';
+        input.id = q.id;
+        input.min = q.min;
+        input.max = q.max;
+        input.value = answers[q.id] || '';
+      }
+
+      container.appendChild(input);
+
+      document.getElementById('prev-btn').disabled = currentQuestion === 0;
+      
+      const isLast = currentQuestion === questions.length - 1;
+      document.getElementById('next-btn').textContent = isLast ? 'Calculate →' : 'Next →';
+
+      document.getElementById('progress-text').textContent = `Question ${currentQuestion + 1} of ${questions.length}`;
+      document.getElementById('progress-percent').textContent = Math.round(((currentQuestion + 1) / questions.length) * 100) + '%';
+      document.getElementById('progress-bar').style.width = ((currentQuestion + 1) / questions.length) * 100 + '%';
+    }
+
+    function saveAnswer() {
+      const input = document.getElementById(questions[currentQuestion].id);
+      if (input && input.value) {
+        answers[questions[currentQuestion].id] = input.value;
+        localStorage.setItem('lifeCalcAnswers', JSON.stringify(answers));
+      }
+    }
+
+    function calculateAge(birthDate) {
+      const today = new Date();
+      const birth = new Date(birthDate);
+      let age = today.getFullYear() - birth.getFullYear();
+      const monthDiff = today.getMonth() - birth.getMonth();
+      if (monthDiff < 0 || (monthDiff === 0 && today.getDate() < birth.getDate())) age--;
+      return age;
+    }
+
+    function calculateBMI(weight, height) {
+      return (weight / (height * height)) * 703;
+    }
+
+    function calculateResults() {
+      let baseExpectancy = lifeExpectancyByCountry[answers.country] || 78.5;
+      baseExpectancy *= genderMultiplier[answers.gender] || 1.0;
+      
+      const age = calculateAge(answers.birthDate);
+      const bmi = calculateBMI(parseFloat(answers.weight), parseFloat(answers.height));
+      
+      let adjustment = 0;
+      
+      if (answers.smoking === 'Never') adjustment += 3;
+      else if (answers.smoking === 'Quit 5+ years ago') adjustment += 1;
+      else if (answers.smoking === 'Quit recently') adjustment += 0.5;
+      else if (answers.smoking === 'Occasionally') adjustment -= 2;
+      else if (answers.smoking === 'Daily') adjustment -= 8;
+      
+      if (answers.exercise === 'Rarely/Never') adjustment -= 4;
+      else if (answers.exercise === '1-2 times per week') adjustment += 1;
+      else if (answers.exercise === '3-4 times per week') adjustment += 3;
+      else if (answers.exercise === '5+ times per week') adjustment += 5;
+      
+      if (answers.diet === 'Poor') adjustment -= 5;
+      else if (answers.diet === 'Fair') adjustment -= 2;
+      else if (answers.diet === 'Good') adjustment += 2;
+      else if (answers.diet === 'Excellent') adjustment += 5;
+      
+      if (answers.alcohol === 'None') adjustment -= 1;
+      else if (answers.alcohol === 'Light (1-2 drinks/week)') adjustment += 1;
+      else if (answers.alcohol === 'Moderate (3-7 drinks/week)') adjustment += 0.5;
+      else if (answers.alcohol === 'Heavy (8+ drinks/week)') adjustment -= 5;
+      
+      const stress = { 'Low': 2, 'Moderate': 0, 'High': -2, 'Very high': -4 };
+      adjustment += stress[answers.stress] || 0;
+      
+      const sleep = parseFloat(answers.sleep);
+      if (sleep >= 7 && sleep <= 9) adjustment += 2;
+      else if (sleep < 7) adjustment -= 1;
+      
+      if (answers.familyHealth === 'Yes') adjustment += 3;
+      else if (answers.familyHealth === 'Not sure') adjustment += 1;
+      
+      if (answers.chronicDiseases === 'Yes - 2+ conditions') adjustment -= 5;
+      else if (answers.chronicDiseases === 'Yes - 1 condition') adjustment -= 2;
+      
+      const mentalHealth = { 'Excellent': 2, 'Good': 1, 'Fair': -1, 'Poor': -3 };
+      adjustment += mentalHealth[answers.mentalHealth] || 0;
+      
+      const socialConnections = { 'Very strong': 2, 'Strong': 1, 'Moderate': 0, 'Weak': -2 };
+      adjustment += socialConnections[answers.socialConnections] || 0;
+      
+      if (answers.education === 'Advanced degree') adjustment += 3;
+      else if (answers.education === 'College degree') adjustment += 2;
+      else if (answers.education === 'Some college') adjustment += 1;
+      
+      const income = { 'Low': -2, 'Lower-middle': -1, 'Middle': 0, 'Upper-middle': 1, 'High': 2 };
+      adjustment += income[answers.income] || 0;
+      
+      const optimism = { 'Very pessimistic': -2, 'Pessimistic': -1, 'Neutral': 0, 'Optimistic': 1, 'Very optimistic': 2 };
+      adjustment += optimism[answers.optimism] || 0;
+      
+      let finalAge = Math.round(baseExpectancy + adjustment);
+      finalAge = Math.max(age + 5, Math.min(finalAge, 105));
+      
+      const now = new Date();
+      deathDate = new Date(now.getFullYear() + (finalAge - age), now.getMonth(), now.getDate());
+      
+      document.getElementById('life-expectancy-age').textContent = finalAge;
+      
+      renderFactorsLists();
+      
+      updateCountdown();
+      renderGrid();
+    }
+
+    function renderFactorsLists() {
+      renderFactorsList('factors-list-stacked', 'stacked');
+    }
+
+    function renderFactorsList(containerId, layout) {
+      const factorsList = document.getElementById(containerId);
+      if (!factorsList) return;
+      factorsList.innerHTML = '';
+      
+      questions.forEach(q => {
+        const row = document.createElement('div');
+        row.style.display = 'flex';
+        row.style.flexDirection = 'row';
+        row.style.alignItems = 'center';
+        row.style.justifyContent = 'space-between';
+        row.style.gap = '12px';
+        row.style.paddingTop = '0.6rem';
+        row.style.paddingBottom = '0.6rem';
+        row.style.borderBottom = '0.5px solid #e0e0e0';
+        
+        const textColumn = document.createElement('div');
+        textColumn.style.display = 'flex';
+        textColumn.style.flexDirection = 'column';
+        textColumn.style.gap = '0';
+        textColumn.style.flex = '1';
+        textColumn.style.minWidth = '0';
+        
+        const questionLabel = document.createElement('div');
+        questionLabel.textContent = q.label;
+        questionLabel.style.fontSize = '12px';
+        questionLabel.style.color = '#888';
+        questionLabel.style.lineHeight = '1.2';
+        textColumn.appendChild(questionLabel);
+        
+        const answerContainer = document.createElement('div');
+        answerContainer.style.fontSize = '14px';
+        answerContainer.style.fontWeight = '500';
+        answerContainer.style.color = '#1a1a1a';
+        answerContainer.style.lineHeight = '1.2';
+        answerContainer.style.marginTop = '4px';
+        
+        const answerText = document.createElement('span');
+        answerText.style.cursor = 'default';
+        
+        let displayValue = answers[q.id] || '—';
+        if (q.id === 'birthDate' && answers[q.id]) {
+          displayValue = new Date(answers[q.id]).toLocaleDateString('en-US', { year: 'numeric', month: 'short', day: 'numeric' });
+        } else if (q.type === 'number' && answers[q.id]) {
+          if (q.id === 'weight') displayValue = `${answers[q.id]} lbs`;
+          else if (q.id === 'height') {
+            const inches = parseInt(answers[q.id]);
+            const ft = Math.floor(inches / 12);
+            const inch = inches % 12;
+            displayValue = `${ft}'${inch}"`;
+          } else if (q.id === 'sleep') displayValue = `${answers[q.id]} hrs`;
+          else displayValue = answers[q.id];
+        }
+        answerText.textContent = displayValue;
+        answerContainer.appendChild(answerText);
+        
+        const editBtn = document.createElement('button');
+        editBtn.type = 'button';
+        editBtn.innerHTML = '<svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M11 4H4a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2v-7"/><path d="M18.5 2.5a2.121 2.121 0 0 1 3 3L12 15l-4 1 1-4 9.5-9.5z"/></svg>';
+        editBtn.style.display = 'inline-flex';
+        editBtn.style.alignItems = 'center';
+        editBtn.style.justifyContent = 'center';
+        editBtn.style.padding = '0';
+        editBtn.style.border = '0.5px solid #e0e0e0';
+        editBtn.style.background = 'white';
+        editBtn.style.borderRadius = '6px';
+        editBtn.style.cursor = 'pointer';
+        editBtn.style.color = '#666';
+        editBtn.style.flexShrink = '0';
+        editBtn.style.flexGrow = '0';
+        editBtn.style.flexBasis = 'auto';
+        editBtn.style.width = '32px';
+        editBtn.style.height = '32px';
+        editBtn.style.minWidth = '32px';
+        editBtn.style.maxWidth = '32px';
+        editBtn.style.alignSelf = 'center';
+        editBtn.style.transition = 'background 0.15s, color 0.15s';
+        editBtn.title = 'Edit this answer';
+        
+        editBtn.addEventListener('mouseover', () => {
+          editBtn.style.background = '#f5f5f5';
+          editBtn.style.color = '#1a1a1a';
+        });
+        editBtn.addEventListener('mouseout', () => {
+          editBtn.style.background = 'white';
+          editBtn.style.color = '#666';
+        });
+        
+        editBtn.addEventListener('click', () => {
+          answerContainer.innerHTML = '';
+          let input;
+          
+          if (q.type === 'date') {
+            input = document.createElement('input');
+            input.type = 'date';
+            input.value = answers[q.id] || '';
+          } else if (q.type === 'select') {
+            input = document.createElement('select');
+            q.options.forEach(opt => {
+              const option = document.createElement('option');
+              option.value = opt;
+              option.textContent = opt;
+              if (opt === answers[q.id]) option.selected = true;
+              input.appendChild(option);
+            });
+          } else if (q.type === 'number') {
+            input = document.createElement('input');
+            input.type = 'number';
+            input.min = q.min;
+            input.max = q.max;
+            input.value = answers[q.id] || '';
+          }
+          
+          input.style.width = '100%';
+          input.style.padding = '0.4rem 0.5rem';
+          input.style.fontSize = '13px';
+          input.style.border = '0.5px solid #378ADD';
+          input.style.borderRadius = '4px';
+          input.style.fontFamily = 'inherit';
+          
+          const saveAndUpdate = () => {
+            if (input.value) {
+              answers[q.id] = input.value;
+              localStorage.setItem('lifeCalcAnswers', JSON.stringify(answers));
+              calculateResults();
+            } else {
+              calculateResults();
+            }
+          };
+          
+          input.addEventListener('blur', saveAndUpdate);
+          input.addEventListener('keydown', (e) => {
+            if (e.key === 'Enter') {
+              e.preventDefault();
+              input.blur();
+            } else if (e.key === 'Escape') {
+              calculateResults();
+            }
+          });
+          
+          if (q.type === 'select') {
+            input.addEventListener('change', saveAndUpdate);
+          }
+          
+          answerContainer.appendChild(input);
+          input.focus();
+        });
+        
+        textColumn.appendChild(answerContainer);
+        row.appendChild(textColumn);
+        row.appendChild(editBtn);
+        
+        factorsList.appendChild(row);
+      });
+    }
+
+    function updateCountdown() {
+      const now = new Date();
+      const timeLeft = deathDate - now;
+      
+      if (timeLeft <= 0) {
+        document.getElementById('counter-years').textContent = '00';
+        document.getElementById('counter-days').textContent = '000';
+        document.getElementById('counter-hours').textContent = '00';
+        document.getElementById('counter-mins').textContent = '00';
+        document.getElementById('counter-secs').textContent = '00';
+        return;
+      }
+      
+      // Calculate total time left in each unit
+      const totalSeconds = Math.floor(timeLeft / 1000);
+      const totalMinutes = Math.floor(totalSeconds / 60);
+      const totalHours = Math.floor(totalMinutes / 60);
+      const totalDays = Math.floor(totalHours / 24);
+      
+      // Cascade calculation: how much time remaining in each unit cycle
+      const secs = totalSeconds % 60;
+      const mins = totalMinutes % 60;
+      const hours = totalHours % 24;
+      const days = totalDays % 365;
+      const years = Math.floor(totalDays / 365);
+      
+      // Total life expectancy in years
+      const estimatedDeathAge = parseInt(document.getElementById('life-expectancy-age').textContent);
+      
+      // Update counter (digital LCD style)
+      document.getElementById('counter-years').textContent = String(years).padStart(2, '0');
+      document.getElementById('counter-days').textContent = String(days).padStart(3, '0');
+      document.getElementById('counter-hours').textContent = String(hours).padStart(2, '0');
+      document.getElementById('counter-mins').textContent = String(mins).padStart(2, '0');
+      document.getElementById('counter-secs').textContent = String(secs).padStart(2, '0');
+      
+      // Update bars - same stopwatch logic
+      // Years bar: years remaining out of total life expectancy
+      document.getElementById('bar-years-val').textContent = years;
+      document.getElementById('bar-years-max').textContent = estimatedDeathAge;
+      document.getElementById('bar-years-fill').style.width = `${(years / estimatedDeathAge) * 100}%`;
+      
+      // Days bar: days remaining within current year (out of 365)
+      document.getElementById('bar-days-val').textContent = days;
+      document.getElementById('bar-days-fill').style.width = `${(days / 365) * 100}%`;
+      
+      // Hours bar: hours remaining within current day (out of 24)
+      document.getElementById('bar-hours-val').textContent = hours;
+      document.getElementById('bar-hours-fill').style.width = `${(hours / 24) * 100}%`;
+      
+      // Minutes bar: minutes remaining within current hour (out of 60)
+      document.getElementById('bar-mins-val').textContent = mins;
+      document.getElementById('bar-mins-fill').style.width = `${(mins / 60) * 100}%`;
+      
+      // Seconds bar: seconds remaining within current minute (out of 60)
+      document.getElementById('bar-secs-val').textContent = secs;
+      document.getElementById('bar-secs-fill').style.width = `${(secs / 60) * 100}%`;
+    }
+
+    function setActiveTab(activeId) {
+      const tabs = ['tab-countdown', 'tab-life', 'tab-factors-stacked'];
+      const views = ['view-countdown', 'view-life', 'view-factors-stacked'];
+      
+      tabs.forEach((tabId, i) => {
+        const tab = document.getElementById(tabId);
+        const view = document.getElementById(views[i]);
+        if (tabId === activeId) {
+          tab.classList.add('active');
+          tab.style.background = 'white';
+          tab.style.fontWeight = '500';
+          tab.style.color = '#1a1a1a';
+          tab.style.boxShadow = '0 1px 2px rgba(0,0,0,0.05)';
+          view.style.display = 'block';
+        } else {
+          tab.classList.remove('active');
+          tab.style.background = 'transparent';
+          tab.style.fontWeight = '400';
+          tab.style.color = '#666';
+          tab.style.boxShadow = 'none';
+          view.style.display = 'none';
+        }
+      });
+    }
+
+    document.getElementById('tab-countdown').addEventListener('click', () => {
+      setActiveTab('tab-countdown');
+    });
+
+    document.getElementById('tab-life').addEventListener('click', () => {
+      setActiveTab('tab-life');
+      renderGrid();
+    });
+
+    document.getElementById('tab-factors-stacked').addEventListener('click', () => {
+      setActiveTab('tab-factors-stacked');
+    });
+
+    document.querySelectorAll('.grid-btn').forEach(btn => {
+      btn.addEventListener('click', (e) => {
+        document.querySelectorAll('.grid-btn').forEach(b => {
+          b.classList.remove('active');
+          b.style.border = '0.5px solid #d0d0d0';
+          b.style.background = 'white';
+          b.style.fontWeight = '400';
+        });
+        e.target.classList.add('active');
+        e.target.style.border = '0.5px solid #378ADD';
+        e.target.style.background = '#f0f4f8';
+        e.target.style.fontWeight = '500';
+        gridView = e.target.dataset.view;
+        drillDownYear = null;
+        drillDownMonth = null;
+        renderGrid();
+      });
+    });
+
+    let lifePhases = JSON.parse(localStorage.getItem('lifePhases')) || [
+      { name: 'Childhood', startAge: 0, endAge: 5, color: '#A78BFA' },
+      { name: 'School', startAge: 6, endAge: 18, color: '#60A5FA' },
+      { name: 'Career', startAge: 23, endAge: 65, color: '#FBBF24' }
+    ];
+    let selectedCellIndex = 0;
+    let totalCellsInView = 0;
+
+    function savePhases() {
+      localStorage.setItem('lifePhases', JSON.stringify(lifePhases));
+    }
+
+    function getPhaseColor(age) {
+      for (const phase of lifePhases) {
+        if (age >= phase.startAge && age <= phase.endAge) {
+          return phase.color;
+        }
+      }
+      return null;
+    }
+
+    function renderPhasesList() {
+      const list = document.getElementById('phases-list');
+      list.innerHTML = '';
+      
+      lifePhases.forEach((phase, index) => {
+        const row = document.createElement('div');
+        row.style.display = 'flex';
+        row.style.alignItems = 'center';
+        row.style.gap = '8px';
+        row.style.fontSize = '11px';
+        
+        const colorBox = document.createElement('div');
+        colorBox.style.width = '12px';
+        colorBox.style.height = '12px';
+        colorBox.style.borderRadius = '3px';
+        colorBox.style.background = phase.color;
+        colorBox.style.cursor = 'pointer';
+        colorBox.title = 'Click to change color';
+        colorBox.addEventListener('click', () => {
+          const input = document.createElement('input');
+          input.type = 'color';
+          input.value = phase.color;
+          input.addEventListener('change', (e) => {
+            lifePhases[index].color = e.target.value;
+            savePhases();
+            renderPhasesList();
+            renderGrid();
+          });
+          input.click();
+        });
+        
+        const name = document.createElement('input');
+        name.type = 'text';
+        name.value = phase.name;
+        name.style.flex = '1';
+        name.style.padding = '3px 6px';
+        name.style.fontSize = '11px';
+        name.style.border = '0.5px solid #e0e0e0';
+        name.style.borderRadius = '3px';
+        name.addEventListener('change', (e) => {
+          lifePhases[index].name = e.target.value;
+          savePhases();
+        });
+        
+        const ageRange = document.createElement('div');
+        ageRange.style.display = 'flex';
+        ageRange.style.gap = '4px';
+        ageRange.style.alignItems = 'center';
+        
+        const startInput = document.createElement('input');
+        startInput.type = 'number';
+        startInput.value = phase.startAge;
+        startInput.min = 0;
+        startInput.max = 120;
+        startInput.style.width = '40px';
+        startInput.style.padding = '3px';
+        startInput.style.fontSize = '11px';
+        startInput.style.border = '0.5px solid #e0e0e0';
+        startInput.style.borderRadius = '3px';
+        startInput.addEventListener('change', (e) => {
+          lifePhases[index].startAge = parseInt(e.target.value);
+          savePhases();
+          renderGrid();
+        });
+        
+        const dash = document.createElement('span');
+        dash.textContent = 'to';
+        dash.style.color = '#999';
+        
+        const endInput = document.createElement('input');
+        endInput.type = 'number';
+        endInput.value = phase.endAge;
+        endInput.min = 0;
+        endInput.max = 120;
+        endInput.style.width = '40px';
+        endInput.style.padding = '3px';
+        endInput.style.fontSize = '11px';
+        endInput.style.border = '0.5px solid #e0e0e0';
+        endInput.style.borderRadius = '3px';
+        endInput.addEventListener('change', (e) => {
+          lifePhases[index].endAge = parseInt(e.target.value);
+          savePhases();
+          renderGrid();
+        });
+        
+        ageRange.appendChild(startInput);
+        ageRange.appendChild(dash);
+        ageRange.appendChild(endInput);
+        
+        const removeBtn = document.createElement('button');
+        removeBtn.textContent = '×';
+        removeBtn.style.padding = '2px 8px';
+        removeBtn.style.fontSize = '12px';
+        removeBtn.style.border = '0.5px solid #e0e0e0';
+        removeBtn.style.background = 'white';
+        removeBtn.style.borderRadius = '3px';
+        removeBtn.style.cursor = 'pointer';
+        removeBtn.addEventListener('click', () => {
+          lifePhases.splice(index, 1);
+          savePhases();
+          renderPhasesList();
+          renderGrid();
+        });
+        
+        row.appendChild(colorBox);
+        row.appendChild(name);
+        row.appendChild(ageRange);
+        row.appendChild(removeBtn);
+        list.appendChild(row);
+      });
+    }
+
+    document.getElementById('add-phase-btn').addEventListener('click', () => {
+      const colors = ['#F472B6', '#34D399', '#A78BFA', '#60A5FA', '#FBBF24', '#FB7185', '#22D3EE', '#A3E635'];
+      lifePhases.push({
+        name: 'New phase',
+        startAge: 0,
+        endAge: 10,
+        color: colors[lifePhases.length % colors.length]
+      });
+      savePhases();
+      renderPhasesList();
+      renderGrid();
+    });
+
+    function showTooltip(e, text) {
+      const tooltip = document.getElementById('grid-tooltip');
+      tooltip.textContent = text;
+      tooltip.style.left = (e.clientX + 10) + 'px';
+      tooltip.style.top = (e.clientY - 30) + 'px';
+      tooltip.style.opacity = '1';
+    }
+
+    function hideTooltip() {
+      document.getElementById('grid-tooltip').style.opacity = '0';
+    }
+
+    function renderGrid() {
+      const container = document.getElementById('grid-container');
+      const unitNameEl = document.getElementById('grid-unit-name');
+      const breadcrumb = document.getElementById('grid-breadcrumb');
+      
+      const birthDate = new Date(answers.birthDate);
+      const estimatedDeathAge = parseInt(document.getElementById('life-expectancy-age').textContent);
+      const now = new Date();
+      
+      container.style.opacity = '0';
+      
+      setTimeout(() => {
+        container.innerHTML = '';
+        breadcrumb.innerHTML = '';
+        
+        if (drillDownYear !== null && drillDownMonth !== null) {
+          renderDaysInMonth(birthDate, drillDownYear, drillDownMonth, now);
+          unitNameEl.textContent = 'days';
+          breadcrumb.innerHTML = `<span style="cursor: pointer; color: #378ADD;" onclick="resetGrid()">← Life</span> › <span style="cursor: pointer; color: #378ADD;" onclick="drillToYear(${drillDownYear})">${drillDownYear}</span> › ${new Date(drillDownYear, drillDownMonth).toLocaleString('default', { month: 'long' })}`;
+          updateSummary('days', birthDate, estimatedDeathAge, now);
+        } else if (drillDownYear !== null) {
+          renderMonthsInYear(birthDate, drillDownYear, now);
+          unitNameEl.textContent = 'months';
+          breadcrumb.innerHTML = `<span style="cursor: pointer; color: #378ADD;" onclick="resetGrid()">← Life</span> › ${drillDownYear}`;
+          updateSummary('months', birthDate, estimatedDeathAge, now);
+        } else if (gridView === 'years') {
+          renderYearsGrid(birthDate, estimatedDeathAge, now);
+          unitNameEl.textContent = 'years';
+          updateSummary('years', birthDate, estimatedDeathAge, now);
+        } else if (gridView === 'months') {
+          renderMonthsGrid(birthDate, estimatedDeathAge, now);
+          unitNameEl.textContent = 'months';
+          updateSummary('months', birthDate, estimatedDeathAge, now);
+        } else if (gridView === 'weeks') {
+          renderWeeksGrid(birthDate, estimatedDeathAge, now);
+          unitNameEl.textContent = 'weeks';
+          updateSummary('weeks', birthDate, estimatedDeathAge, now);
+        }
+        
+        container.style.opacity = '1';
+      }, 200);
+    }
+
+    function updateSummary(unit, birthDate, deathAge, now) {
+      let lived = 0, total = 0;
+      
+      if (unit === 'years') {
+        const ageMs = now - birthDate;
+        lived = Math.floor(ageMs / (1000 * 60 * 60 * 24 * 365.25));
+        total = deathAge;
+      } else if (unit === 'months') {
+        const monthsLived = (now.getFullYear() - birthDate.getFullYear()) * 12 + (now.getMonth() - birthDate.getMonth());
+        lived = monthsLived;
+        total = deathAge * 12;
+      } else if (unit === 'weeks') {
+        lived = Math.floor((now - birthDate) / (1000 * 60 * 60 * 24 * 7));
+        total = deathAge * 52;
+      } else if (unit === 'days') {
+        lived = Math.floor((now - birthDate) / (1000 * 60 * 60 * 24));
+        total = Math.floor(deathAge * 365.25);
+      }
+      
+      const percent = Math.round((lived / total) * 100);
+      document.getElementById('grid-summary-lived').textContent = lived.toLocaleString();
+      document.getElementById('grid-summary-total').textContent = total.toLocaleString();
+      document.getElementById('grid-summary-unit').textContent = unit;
+      document.getElementById('grid-summary-percent').textContent = `(${percent}%)`;
+    }
+
+    window.resetGrid = function() {
+      drillDownYear = null;
+      drillDownMonth = null;
+      renderGrid();
+    };
+
+    window.drillToYear = function(year) {
+      drillDownYear = year;
+      drillDownMonth = null;
+      renderGrid();
+    };
+
+    function renderYearsGrid(birthDate, deathAge, now) {
+      const container = document.getElementById('grid-container');
+      const birthYear = birthDate.getFullYear();
+      const currentYear = now.getFullYear();
+      const totalYears = deathAge;
+      totalCellsInView = totalYears;
+      
+      const cols = 10;
+      const rows = Math.ceil(totalYears / cols);
+      const gap = 4;
+      const labelWidth = 50;
+      const labelGap = 8;
+      
+      const containerWidth = container.clientWidth;
+      const containerHeight = container.clientHeight;
+      
+      const availableWidth = containerWidth - labelWidth - labelGap;
+      const availableHeight = containerHeight;
+      
+      const cellWidth = (availableWidth - (cols - 1) * gap) / cols;
+      const cellHeight = (availableHeight - (rows - 1) * gap) / rows;
+      
+      const wrapper = document.createElement('div');
+      wrapper.style.display = 'grid';
+      wrapper.style.gridTemplateColumns = `${labelWidth}px auto`;
+      wrapper.style.gap = `${labelGap}px`;
+      wrapper.style.height = '100%';
+      
+      const labelsCol = document.createElement('div');
+      labelsCol.style.display = 'grid';
+      labelsCol.style.gridTemplateRows = `repeat(${rows}, ${cellHeight}px)`;
+      labelsCol.style.gap = `${gap}px`;
+      
+      for (let r = 0; r < rows; r++) {
+        const label = document.createElement('div');
+        label.textContent = `Age ${r * 10}`;
+        label.style.fontSize = '11px';
+        label.style.color = '#999';
+        label.style.textAlign = 'right';
+        label.style.display = 'flex';
+        label.style.alignItems = 'center';
+        label.style.justifyContent = 'flex-end';
+        labelsCol.appendChild(label);
+      }
+      wrapper.appendChild(labelsCol);
+      
+      const grid = document.createElement('div');
+      grid.style.display = 'grid';
+      grid.style.gridTemplateColumns = `repeat(${cols}, ${cellWidth}px)`;
+      grid.style.gridTemplateRows = `repeat(${rows}, ${cellHeight}px)`;
+      grid.style.gap = `${gap}px`;
+      
+      for (let i = 0; i < totalYears; i++) {
+        const year = birthYear + i;
+        const cell = document.createElement('div');
+        cell.style.borderRadius = '3px';
+        cell.style.cursor = 'pointer';
+        cell.style.transition = 'all 0.15s';
+        cell.dataset.index = i;
+        
+        const phaseColor = getPhaseColor(i);
+        
+        if (year < currentYear) {
+          cell.style.background = phaseColor || '#5a5a5a';
+        } else if (year === currentYear) {
+          cell.style.background = '#FF375F';
+          cell.style.boxShadow = '0 0 0 2px rgba(255, 55, 95, 0.3)';
+        } else {
+          cell.style.background = 'white';
+          cell.style.border = '0.5px solid #d0d0d0';
+          if (phaseColor) {
+            cell.style.borderColor = phaseColor;
+            cell.style.borderWidth = '1px';
+          }
+        }
+        
+        cell.addEventListener('mouseover', (e) => {
+          cell.style.transform = 'scale(1.1)';
+          cell.style.zIndex = '10';
+          cell.style.position = 'relative';
+          const phase = lifePhases.find(p => i >= p.startAge && i <= p.endAge);
+          const phaseText = phase ? ` · ${phase.name}` : '';
+          showTooltip(e, `${year} · Age ${i}${phaseText}`);
+        });
+        cell.addEventListener('mousemove', (e) => {
+          const phase = lifePhases.find(p => i >= p.startAge && i <= p.endAge);
+          const phaseText = phase ? ` · ${phase.name}` : '';
+          showTooltip(e, `${year} · Age ${i}${phaseText}`);
+        });
+        cell.addEventListener('mouseout', () => {
+          cell.style.transform = 'scale(1)';
+          cell.style.zIndex = '1';
+          hideTooltip();
+        });
+        cell.addEventListener('click', () => {
+          drillDownYear = year;
+          drillDownMonth = null;
+          renderGrid();
+        });
+        
+        grid.appendChild(cell);
+      }
+      
+      wrapper.appendChild(grid);
+      container.appendChild(wrapper);
+    }
+
+    function renderMonthsGrid(birthDate, deathAge, now) {
+      const container = document.getElementById('grid-container');
+      const birthYear = birthDate.getFullYear();
+      const currentYear = now.getFullYear();
+      const currentMonth = now.getMonth();
+      const totalYears = deathAge;
+      
+      const cols = 12;
+      const rows = totalYears;
+      const gap = 2;
+      const labelWidth = 40;
+      const labelGap = 8;
+      const headerHeight = 18;
+      
+      const containerWidth = container.clientWidth;
+      const containerHeight = container.clientHeight;
+      
+      const availableWidth = containerWidth - labelWidth - labelGap;
+      const availableHeight = containerHeight - headerHeight;
+      
+      const cellWidth = (availableWidth - (cols - 1) * gap) / cols;
+      const cellHeight = (availableHeight - (rows - 1) * gap) / rows;
+      
+      const wrapper = document.createElement('div');
+      wrapper.style.display = 'grid';
+      wrapper.style.gridTemplateColumns = `${labelWidth}px auto`;
+      wrapper.style.gap = `${labelGap}px`;
+      wrapper.style.height = '100%';
+      
+      const labelsCol = document.createElement('div');
+      labelsCol.style.display = 'grid';
+      labelsCol.style.gridTemplateRows = `${headerHeight}px repeat(${rows}, ${cellHeight}px)`;
+      labelsCol.style.gap = `${gap}px`;
+      
+      const headerSpacer = document.createElement('div');
+      labelsCol.appendChild(headerSpacer);
+      
+      for (let y = 0; y < rows; y++) {
+        const label = document.createElement('div');
+        if (y % 5 === 0) {
+          label.textContent = birthYear + y;
+          label.style.fontSize = '10px';
+          label.style.color = '#999';
+        }
+        label.style.textAlign = 'right';
+        label.style.display = 'flex';
+        label.style.alignItems = 'center';
+        label.style.justifyContent = 'flex-end';
+        labelsCol.appendChild(label);
+      }
+      wrapper.appendChild(labelsCol);
+      
+      const gridWrapper = document.createElement('div');
+      gridWrapper.style.display = 'flex';
+      gridWrapper.style.flexDirection = 'column';
+      gridWrapper.style.gap = `${gap}px`;
+      
+      const headerRow = document.createElement('div');
+      headerRow.style.display = 'grid';
+      headerRow.style.gridTemplateColumns = `repeat(${cols}, ${cellWidth}px)`;
+      headerRow.style.gap = `${gap}px`;
+      headerRow.style.fontSize = '10px';
+      headerRow.style.color = '#999';
+      headerRow.style.textAlign = 'center';
+      headerRow.style.height = `${headerHeight}px`;
+      
+      ['J','F','M','A','M','J','J','A','S','O','N','D'].forEach(m => {
+        const h = document.createElement('div');
+        h.textContent = m;
+        headerRow.appendChild(h);
+      });
+      gridWrapper.appendChild(headerRow);
+      
+      const grid = document.createElement('div');
+      grid.style.display = 'grid';
+      grid.style.gridTemplateColumns = `repeat(${cols}, ${cellWidth}px)`;
+      grid.style.gridTemplateRows = `repeat(${rows}, ${cellHeight}px)`;
+      grid.style.gap = `${gap}px`;
+      
+      for (let y = 0; y < totalYears; y++) {
+        const year = birthYear + y;
+        for (let m = 0; m < 12; m++) {
+          const cell = document.createElement('div');
+          cell.style.borderRadius = '2px';
+          cell.style.cursor = 'pointer';
+          cell.style.transition = 'all 0.15s';
+          
+          const phaseColor = getPhaseColor(y);
+          
+          if (year < currentYear || (year === currentYear && m < currentMonth)) {
+            cell.style.background = phaseColor || '#5a5a5a';
+          } else if (year === currentYear && m === currentMonth) {
+            cell.style.background = '#FF375F';
+            cell.style.boxShadow = '0 0 0 2px rgba(255, 55, 95, 0.3)';
+          } else {
+            cell.style.background = 'white';
+            cell.style.border = '0.5px solid #e0e0e0';
+            if (phaseColor) {
+              cell.style.borderColor = phaseColor;
+            }
+          }
+          
+          const monthName = new Date(year, m).toLocaleString('default', { month: 'long' });
+          cell.addEventListener('mouseover', (e) => {
+            cell.style.transform = 'scale(1.8)';
+            cell.style.zIndex = '10';
+            cell.style.position = 'relative';
+            showTooltip(e, `${monthName} ${year} · Age ${y}`);
+          });
+          cell.addEventListener('mousemove', (e) => {
+            showTooltip(e, `${monthName} ${year} · Age ${y}`);
+          });
+          cell.addEventListener('mouseout', () => {
+            cell.style.transform = 'scale(1)';
+            cell.style.zIndex = '1';
+            hideTooltip();
+          });
+          cell.addEventListener('click', () => {
+            drillDownYear = year;
+            drillDownMonth = m;
+            renderGrid();
+          });
+          
+          grid.appendChild(cell);
+        }
+      }
+      
+      gridWrapper.appendChild(grid);
+      wrapper.appendChild(gridWrapper);
+      container.appendChild(wrapper);
+    }
+
+    function renderWeeksGrid(birthDate, deathAge, now) {
+      const container = document.getElementById('grid-container');
+      const birthYear = birthDate.getFullYear();
+      const totalYears = deathAge;
+      const weeksLived = Math.floor((now - birthDate) / (1000 * 60 * 60 * 24 * 7));
+      
+      const cols = 52;
+      const rows = totalYears;
+      const gap = 1;
+      const labelWidth = 40;
+      const labelGap = 8;
+      
+      const containerWidth = container.clientWidth;
+      const containerHeight = container.clientHeight;
+      
+      const availableWidth = containerWidth - labelWidth - labelGap;
+      const availableHeight = containerHeight;
+      
+      const cellWidth = (availableWidth - (cols - 1) * gap) / cols;
+      const cellHeight = (availableHeight - (rows - 1) * gap) / rows;
+      
+      const wrapper = document.createElement('div');
+      wrapper.style.display = 'grid';
+      wrapper.style.gridTemplateColumns = `${labelWidth}px auto`;
+      wrapper.style.gap = `${labelGap}px`;
+      wrapper.style.height = '100%';
+      
+      const labelsCol = document.createElement('div');
+      labelsCol.style.display = 'grid';
+      labelsCol.style.gridTemplateRows = `repeat(${rows}, ${cellHeight}px)`;
+      labelsCol.style.gap = `${gap}px`;
+      
+      for (let y = 0; y < rows; y++) {
+        const label = document.createElement('div');
+        if (y % 5 === 0) {
+          label.textContent = birthYear + y;
+          label.style.fontSize = '10px';
+          label.style.color = '#999';
+        }
+        label.style.textAlign = 'right';
+        label.style.display = 'flex';
+        label.style.alignItems = 'center';
+        label.style.justifyContent = 'flex-end';
+        labelsCol.appendChild(label);
+      }
+      wrapper.appendChild(labelsCol);
+      
+      const grid = document.createElement('div');
+      grid.style.display = 'grid';
+      grid.style.gridTemplateColumns = `repeat(${cols}, ${cellWidth}px)`;
+      grid.style.gridTemplateRows = `repeat(${rows}, ${cellHeight}px)`;
+      grid.style.gap = `${gap}px`;
+      
+      for (let y = 0; y < totalYears; y++) {
+        for (let w = 0; w < 52; w++) {
+          const weekIndex = y * 52 + w;
+          const cell = document.createElement('div');
+          cell.style.borderRadius = '1px';
+          cell.style.transition = 'all 0.1s';
+          cell.style.cursor = 'pointer';
+          
+          const phaseColor = getPhaseColor(y);
+          
+          if (weekIndex < weeksLived) {
+            cell.style.background = phaseColor || '#5a5a5a';
+          } else if (weekIndex === weeksLived) {
+            cell.style.background = '#FF375F';
+            cell.style.boxShadow = '0 0 0 1px rgba(255, 55, 95, 0.5)';
+          } else {
+            cell.style.background = 'white';
+            cell.style.border = '0.5px solid #e8e8e8';
+          }
+          
+          cell.addEventListener('mouseover', (e) => {
+            cell.style.transform = 'scale(3)';
+            cell.style.zIndex = '10';
+            cell.style.position = 'relative';
+            showTooltip(e, `Week ${weekIndex + 1} · Age ${y}`);
+          });
+          cell.addEventListener('mousemove', (e) => {
+            showTooltip(e, `Week ${weekIndex + 1} · Age ${y}`);
+          });
+          cell.addEventListener('mouseout', () => {
+            cell.style.transform = 'scale(1)';
+            cell.style.zIndex = '1';
+            hideTooltip();
+          });
+          
+          grid.appendChild(cell);
+        }
+      }
+      
+      wrapper.appendChild(grid);
+      container.appendChild(wrapper);
+    }
+
+    function renderMonthsInYear(birthDate, year, now) {
+      const container = document.getElementById('grid-container');
+      const currentYear = now.getFullYear();
+      const currentMonth = now.getMonth();
+      const ageInYear = year - birthDate.getFullYear();
+      
+      const grid = document.createElement('div');
+      grid.style.display = 'grid';
+      grid.style.gridTemplateColumns = 'repeat(4, 1fr)';
+      grid.style.gap = '8px';
+      
+      for (let m = 0; m < 12; m++) {
+        const cell = document.createElement('div');
+        cell.style.padding = '1rem';
+        cell.style.borderRadius = '8px';
+        cell.style.cursor = 'pointer';
+        cell.style.transition = 'all 0.15s';
+        cell.style.textAlign = 'center';
+        cell.style.fontSize = '13px';
+        
+        const phaseColor = getPhaseColor(ageInYear);
+        
+        if (year < currentYear || (year === currentYear && m < currentMonth)) {
+          cell.style.background = phaseColor || '#5a5a5a';
+          cell.style.color = 'white';
+        } else if (year === currentYear && m === currentMonth) {
+          cell.style.background = '#FF375F';
+          cell.style.color = 'white';
+          cell.style.boxShadow = '0 0 0 2px rgba(255, 55, 95, 0.3)';
+        } else {
+          cell.style.background = 'white';
+          cell.style.border = '0.5px solid #d0d0d0';
+          cell.style.color = '#1a1a1a';
+        }
+        
+        cell.textContent = new Date(year, m).toLocaleString('default', { month: 'short' });
+        cell.addEventListener('mouseover', () => { cell.style.transform = 'scale(1.05)'; });
+        cell.addEventListener('mouseout', () => { cell.style.transform = 'scale(1)'; });
+        cell.addEventListener('click', () => {
+          drillDownMonth = m;
+          renderGrid();
+        });
+        
+        grid.appendChild(cell);
+      }
+      
+      container.appendChild(grid);
+    }
+
+    function renderDaysInMonth(birthDate, year, month, now) {
+      const container = document.getElementById('grid-container');
+      const currentYear = now.getFullYear();
+      const currentMonth = now.getMonth();
+      const currentDate = now.getDate();
+      const daysInMonth = new Date(year, month + 1, 0).getDate();
+      const firstDayOfMonth = new Date(year, month, 1).getDay();
+      const ageInYear = year - birthDate.getFullYear();
+      
+      const wrapper = document.createElement('div');
+      
+      const dayHeader = document.createElement('div');
+      dayHeader.style.display = 'grid';
+      dayHeader.style.gridTemplateColumns = 'repeat(7, 1fr)';
+      dayHeader.style.gap = '4px';
+      dayHeader.style.marginBottom = '8px';
+      dayHeader.style.fontSize = '10px';
+      dayHeader.style.color = '#999';
+      dayHeader.style.textAlign = 'center';
+      ['Sun','Mon','Tue','Wed','Thu','Fri','Sat'].forEach(d => {
+        const h = document.createElement('div');
+        h.textContent = d;
+        dayHeader.appendChild(h);
+      });
+      wrapper.appendChild(dayHeader);
+      
+      const grid = document.createElement('div');
+      grid.style.display = 'grid';
+      grid.style.gridTemplateColumns = 'repeat(7, 1fr)';
+      grid.style.gap = '4px';
+      
+      for (let i = 0; i < firstDayOfMonth; i++) {
+        grid.appendChild(document.createElement('div'));
+      }
+      
+      const phaseColor = getPhaseColor(ageInYear);
+      
+      for (let d = 1; d <= daysInMonth; d++) {
+        const cell = document.createElement('div');
+        cell.style.aspectRatio = '1';
+        cell.style.borderRadius = '6px';
+        cell.style.display = 'flex';
+        cell.style.alignItems = 'center';
+        cell.style.justifyContent = 'center';
+        cell.style.fontSize = '12px';
+        cell.style.transition = 'all 0.15s';
+        
+        const isPast = year < currentYear || (year === currentYear && month < currentMonth) || (year === currentYear && month === currentMonth && d < currentDate);
+        const isCurrent = year === currentYear && month === currentMonth && d === currentDate;
+        
+        if (isPast) {
+          cell.style.background = phaseColor || '#5a5a5a';
+          cell.style.color = 'white';
+        } else if (isCurrent) {
+          cell.style.background = '#FF375F';
+          cell.style.color = 'white';
+          cell.style.boxShadow = '0 0 0 2px rgba(255, 55, 95, 0.3)';
+        } else {
+          cell.style.background = 'white';
+          cell.style.border = '0.5px solid #d0d0d0';
+          cell.style.color = '#1a1a1a';
+        }
+        
+        cell.textContent = d;
+        cell.addEventListener('mouseover', () => { cell.style.transform = 'scale(1.1)'; });
+        cell.addEventListener('mouseout', () => { cell.style.transform = 'scale(1)'; });
+        grid.appendChild(cell);
+      }
+      
+      wrapper.appendChild(grid);
+      container.appendChild(wrapper);
+    }
+
+    document.addEventListener('keydown', (e) => {
+      if (document.getElementById('results-container').style.display === 'none') return;
+      if (e.key === 'Escape' && (drillDownYear !== null || drillDownMonth !== null)) {
+        e.preventDefault();
+        if (drillDownMonth !== null) {
+          drillDownMonth = null;
+        } else {
+          drillDownYear = null;
+        }
+        renderGrid();
+      }
+      
+      if (['ArrowLeft', 'ArrowRight', 'ArrowUp', 'ArrowDown'].includes(e.key)) {
+        e.preventDefault();
+        const views = ['years', 'months', 'weeks'];
+        const currentIdx = views.indexOf(gridView);
+        if (e.key === 'ArrowRight' && currentIdx < views.length - 1) {
+          gridView = views[currentIdx + 1];
+          document.querySelectorAll('.grid-btn').forEach(b => {
+            b.classList.remove('active');
+            b.style.border = '0.5px solid #d0d0d0';
+            b.style.background = 'white';
+            b.style.fontWeight = '400';
+            if (b.dataset.view === gridView) {
+              b.classList.add('active');
+              b.style.border = '0.5px solid #378ADD';
+              b.style.background = '#f0f4f8';
+              b.style.fontWeight = '500';
+            }
+          });
+          renderGrid();
+        } else if (e.key === 'ArrowLeft' && currentIdx > 0) {
+          gridView = views[currentIdx - 1];
+          document.querySelectorAll('.grid-btn').forEach(b => {
+            b.classList.remove('active');
+            b.style.border = '0.5px solid #d0d0d0';
+            b.style.background = 'white';
+            b.style.fontWeight = '400';
+            if (b.dataset.view === gridView) {
+              b.classList.add('active');
+              b.style.border = '0.5px solid #378ADD';
+              b.style.background = '#f0f4f8';
+              b.style.fontWeight = '500';
+            }
+          });
+          renderGrid();
+        }
+      }
+    });
+
+    document.getElementById('next-btn').addEventListener('click', (e) => {
+      e.preventDefault();
+      saveAnswer();
+      
+      const input = document.getElementById(questions[currentQuestion].id);
+      if (!input || !input.value) {
+        alert('Please answer this question before continuing.');
+        return;
+      }
+      
+      if (currentQuestion < questions.length - 1) {
+        currentQuestion++;
+        renderQuestion();
+      } else {
+        document.getElementById('quiz-form').style.display = 'none';
+        document.getElementById('results-container').style.display = 'block';
+        calculateResults();
+      }
+    });
+
+    document.getElementById('prev-btn').addEventListener('click', (e) => {
+      e.preventDefault();
+      saveAnswer();
+      if (currentQuestion > 0) {
+        currentQuestion--;
+        renderQuestion();
+      }
+    });
+
+    function handleRestart() {
+      const confirmed = confirm('Are you sure you want to restart? This will clear all your answers and take you back through the questionnaire from the beginning.');
+      if (!confirmed) return;
+      
+      localStorage.removeItem('lifeCalcAnswers');
+      Object.keys(answers).forEach(k => delete answers[k]);
+      currentQuestion = 0;
+      document.getElementById('quiz-form').style.display = 'block';
+      document.getElementById('results-container').style.display = 'none';
+      renderQuestion();
+    }
+
+    document.getElementById('restart-btn-stacked').addEventListener('click', handleRestart);
+
+    let resizeTimeout;
+    window.addEventListener('resize', () => {
+      clearTimeout(resizeTimeout);
+      resizeTimeout = setTimeout(() => {
+        if (document.getElementById('results-container').style.display !== 'none') {
+          renderGrid();
+        }
+      }, 200);
+    });
+
+    // Check if we have all answers
+    const allAnswered = questions.every(q => answers[q.id]);
+    if (allAnswered) {
+      document.getElementById('quiz-form').style.display = 'none';
+      document.getElementById('results-container').style.display = 'block';
+      renderPhasesList();
+      calculateResults();
+      // Update countdown every second
+      setInterval(updateCountdown, 1000);
+    } else {
+      document.getElementById('quiz-form').style.display = 'block';
+      renderQuestion();
+    }
+  </script>
+</body>
+</html>
