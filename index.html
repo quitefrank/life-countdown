@@ -5,6 +5,13 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>Life Countdown Calculator</title>
   <style>
+    @font-face {
+      font-family: 'Cursed Timer ULiL';
+      src: url('assets/cursed-timer.woff2') format('woff2');
+      font-weight: normal;
+      font-style: normal;
+      font-display: swap;
+    }
     * {
       margin: 0;
       padding: 0;
@@ -263,74 +270,79 @@
         </div>
 
         <div id="view-countdown">
-        <div class="results-headline" style="background: #FF9500; border-radius: 12px; padding: 1.5rem; text-align: center; margin-bottom: 1.5rem;">
+        <div class="results-headline" style="background: #000; border-radius: 12px; padding: 1.5rem; text-align: center; margin-bottom: 1.5rem;">
           <div style="display: grid; grid-template-columns: repeat(5, 1fr); gap: 8px; margin-bottom: 0.5rem;">
-            <div style="font-family: 'Courier New', monospace; font-size: 10px; color: rgba(0,0,0,0.7); text-transform: uppercase; letter-spacing: 1px;">Years</div>
-            <div style="font-family: 'Courier New', monospace; font-size: 10px; color: rgba(0,0,0,0.7); text-transform: uppercase; letter-spacing: 1px;">Days</div>
-            <div style="font-family: 'Courier New', monospace; font-size: 10px; color: rgba(0,0,0,0.7); text-transform: uppercase; letter-spacing: 1px;">Hours</div>
-            <div style="font-family: 'Courier New', monospace; font-size: 10px; color: rgba(0,0,0,0.7); text-transform: uppercase; letter-spacing: 1px;">Mins</div>
-            <div style="font-family: 'Courier New', monospace; font-size: 10px; color: rgba(0,0,0,0.7); text-transform: uppercase; letter-spacing: 1px;">Secs</div>
+            <div style="font-size: 10px; color: rgba(255,255,255,0.7); text-transform: uppercase; letter-spacing: 1px;">Years</div>
+            <div style="font-size: 10px; color: rgba(255,255,255,0.7); text-transform: uppercase; letter-spacing: 1px;">Days</div>
+            <div style="font-size: 10px; color: rgba(255,255,255,0.7); text-transform: uppercase; letter-spacing: 1px;">Hours</div>
+            <div style="font-size: 10px; color: rgba(255,255,255,0.7); text-transform: uppercase; letter-spacing: 1px;">Mins</div>
+            <div style="font-size: 10px; color: rgba(255,255,255,0.7); text-transform: uppercase; letter-spacing: 1px;">Secs</div>
           </div>
           
           <div style="display: grid; grid-template-columns: repeat(5, 1fr); gap: 8px; align-items: center;">
-            <div style="font-family: 'Courier New', 'Monaco', monospace; font-size: 38px; font-weight: 700; color: #1a1a1a; letter-spacing: 1px;"><span id="counter-years">00</span></div>
-            <div style="font-family: 'Courier New', 'Monaco', monospace; font-size: 38px; font-weight: 700; color: #1a1a1a; letter-spacing: 1px;"><span id="counter-days">000</span></div>
-            <div style="font-family: 'Courier New', 'Monaco', monospace; font-size: 38px; font-weight: 700; color: #1a1a1a; letter-spacing: 1px;"><span id="counter-hours">00</span></div>
-            <div style="font-family: 'Courier New', 'Monaco', monospace; font-size: 38px; font-weight: 700; color: #1a1a1a; letter-spacing: 1px;"><span id="counter-mins">00</span></div>
-            <div style="font-family: 'Courier New', 'Monaco', monospace; font-size: 38px; font-weight: 700; color: #1a1a1a; letter-spacing: 1px;"><span id="counter-secs">00</span></div>
+            <div style="font-family: 'Cursed Timer ULiL', 'Courier New', monospace; font-size: 38px; font-weight: normal; color: #fff; letter-spacing: 1px;"><span id="counter-years">00</span></div>
+            <div style="font-family: 'Cursed Timer ULiL', 'Courier New', monospace; font-size: 38px; font-weight: normal; color: #fff; letter-spacing: 1px;"><span id="counter-days">000</span></div>
+            <div style="font-family: 'Cursed Timer ULiL', 'Courier New', monospace; font-size: 38px; font-weight: normal; color: #fff; letter-spacing: 1px;"><span id="counter-hours">00</span></div>
+            <div style="font-family: 'Cursed Timer ULiL', 'Courier New', monospace; font-size: 38px; font-weight: normal; color: #fff; letter-spacing: 1px;"><span id="counter-mins">00</span></div>
+            <div style="font-family: 'Cursed Timer ULiL', 'Courier New', monospace; font-size: 38px; font-weight: normal; color: #fff; letter-spacing: 1px;"><span id="counter-secs">00</span></div>
           </div>
-          
-          <p style="font-size: 12px; color: rgba(0,0,0,0.7); margin: 0.75rem 0 0 0;">time remaining</p>
+          <p style="font-size: 12px; color: rgba(255,255,255,0.7); margin: 0.75rem 0 0 0;">Until You 💀</p>
         </div>
 
         <div id="stopwatch-bars" style="background: white; border-radius: 12px; border: 0.5px solid #e0e0e0; padding: 1.5rem; margin-bottom: 1.5rem;">
+          <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 1.25rem; padding-bottom: 1rem; border-bottom: 0.5px solid #e0e0e0;">
+            <div style="display: flex; align-items: center; gap: 0.55rem;">
+              <svg width="26" height="14" viewBox="0 0 26 14" xmlns="http://www.w3.org/2000/svg" aria-hidden="true">
+                <rect x="0.75" y="0.75" width="21.5" height="12.5" rx="2.5" fill="none" stroke="#1a1a1a" stroke-width="1.5"/>
+                <rect x="23.5" y="4.5" width="2" height="5" rx="1" fill="#1a1a1a"/>
+                <rect id="battery-icon-fill" x="2.5" y="2.5" width="18" height="9" rx="1" fill="#1a1a1a"/>
+              </svg>
+              <span style="font-weight: 600; font-size: 14px; color: #1a1a1a;">Life Remaining</span>
+            </div>
+            <span id="battery-percent" style="font-weight: 500; font-size: 14px; color: #1a1a1a; font-variant-numeric: tabular-nums;">--%</span>
+          </div>
           <div class="bar-row" style="margin-bottom: 1rem;">
-            <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 0.35rem;">
-              <span style="font-size: 11px; color: #999; text-transform: uppercase; letter-spacing: 0.5px;">Years</span>
-              <span style="font-size: 13px; font-weight: 500; color: #1a1a1a; font-family: 'Courier New', monospace;"><span id="bar-years-val">0</span> / <span id="bar-years-max">0</span></span>
+            <div style="margin-bottom: 0.35rem;">
+              <span style="font-size: 11px; color: #999; text-transform: uppercase; letter-spacing: 0.5px;"><span id="bar-years-val" style="display: inline-block; min-width: var(--val-width, 1.6em); text-align: left; font-variant-numeric: tabular-nums;">0</span> Years</span>
             </div>
             <div style="width: 100%; height: 10px; background: #f0f0f0; border-radius: 5px; overflow: hidden;">
-              <div id="bar-years-fill" style="height: 100%; background: linear-gradient(to right, #FF9500, #FF6B6B); width: 0%; transition: width 0.5s linear; border-radius: 5px;"></div>
+              <div id="bar-years-fill" style="height: 100%; background: #1a1a1a; width: 0%; transition: width 0.5s linear; border-radius: 5px;"></div>
             </div>
           </div>
           
           <div class="bar-row" style="margin-bottom: 1rem;">
-            <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 0.35rem;">
-              <span style="font-size: 11px; color: #999; text-transform: uppercase; letter-spacing: 0.5px;">Days</span>
-              <span style="font-size: 13px; font-weight: 500; color: #1a1a1a; font-family: 'Courier New', monospace;"><span id="bar-days-val">0</span> / 365</span>
+            <div style="margin-bottom: 0.35rem;">
+              <span style="font-size: 11px; color: #999; text-transform: uppercase; letter-spacing: 0.5px;"><span id="bar-days-val" style="display: inline-block; min-width: var(--val-width, 1.6em); text-align: left; font-variant-numeric: tabular-nums;">0</span> Days</span>
             </div>
             <div style="width: 100%; height: 10px; background: #f0f0f0; border-radius: 5px; overflow: hidden;">
-              <div id="bar-days-fill" style="height: 100%; background: linear-gradient(to right, #FF9500, #FF6B6B); width: 0%; transition: width 0.5s linear; border-radius: 5px;"></div>
+              <div id="bar-days-fill" style="height: 100%; background: #1a1a1a; width: 0%; transition: width 0.5s linear; border-radius: 5px;"></div>
             </div>
           </div>
           
           <div class="bar-row" style="margin-bottom: 1rem;">
-            <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 0.35rem;">
-              <span style="font-size: 11px; color: #999; text-transform: uppercase; letter-spacing: 0.5px;">Hours</span>
-              <span style="font-size: 13px; font-weight: 500; color: #1a1a1a; font-family: 'Courier New', monospace;"><span id="bar-hours-val">0</span> / 24</span>
+            <div style="margin-bottom: 0.35rem;">
+              <span style="font-size: 11px; color: #999; text-transform: uppercase; letter-spacing: 0.5px;"><span id="bar-hours-val" style="display: inline-block; min-width: var(--val-width, 1.6em); text-align: left; font-variant-numeric: tabular-nums;">0</span> Hours</span>
             </div>
             <div style="width: 100%; height: 10px; background: #f0f0f0; border-radius: 5px; overflow: hidden;">
-              <div id="bar-hours-fill" style="height: 100%; background: linear-gradient(to right, #FF9500, #FF6B6B); width: 0%; transition: width 0.5s linear; border-radius: 5px;"></div>
+              <div id="bar-hours-fill" style="height: 100%; background: #1a1a1a; width: 0%; transition: width 0.5s linear; border-radius: 5px;"></div>
             </div>
           </div>
           
           <div class="bar-row" style="margin-bottom: 1rem;">
-            <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 0.35rem;">
-              <span style="font-size: 11px; color: #999; text-transform: uppercase; letter-spacing: 0.5px;">Minutes</span>
-              <span style="font-size: 13px; font-weight: 500; color: #1a1a1a; font-family: 'Courier New', monospace;"><span id="bar-mins-val">0</span> / 60</span>
+            <div style="margin-bottom: 0.35rem;">
+              <span style="font-size: 11px; color: #999; text-transform: uppercase; letter-spacing: 0.5px;"><span id="bar-mins-val" style="display: inline-block; min-width: var(--val-width, 1.6em); text-align: left; font-variant-numeric: tabular-nums;">0</span> Minutes</span>
             </div>
             <div style="width: 100%; height: 10px; background: #f0f0f0; border-radius: 5px; overflow: hidden;">
-              <div id="bar-mins-fill" style="height: 100%; background: linear-gradient(to right, #FF9500, #FF6B6B); width: 0%; transition: width 0.5s linear; border-radius: 5px;"></div>
+              <div id="bar-mins-fill" style="height: 100%; background: #1a1a1a; width: 0%; transition: width 0.5s linear; border-radius: 5px;"></div>
             </div>
           </div>
           
           <div class="bar-row" style="margin-bottom: 0;">
-            <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 0.35rem;">
-              <span style="font-size: 11px; color: #999; text-transform: uppercase; letter-spacing: 0.5px;">Seconds</span>
-              <span style="font-size: 13px; font-weight: 500; color: #1a1a1a; font-family: 'Courier New', monospace;"><span id="bar-secs-val">0</span> / 60</span>
+            <div style="margin-bottom: 0.35rem;">
+              <span style="font-size: 11px; color: #999; text-transform: uppercase; letter-spacing: 0.5px;"><span id="bar-secs-val" style="display: inline-block; min-width: var(--val-width, 1.6em); text-align: left; font-variant-numeric: tabular-nums;">0</span> Seconds</span>
             </div>
             <div style="width: 100%; height: 10px; background: #f0f0f0; border-radius: 5px; overflow: hidden;">
-              <div id="bar-secs-fill" style="height: 100%; background: linear-gradient(to right, #FF9500, #FF6B6B); width: 0%; transition: width 0.1s linear; border-radius: 5px;"></div>
+              <div id="bar-secs-fill" style="height: 100%; background: #1a1a1a; width: 0%; transition: width 0.1s linear; border-radius: 5px;"></div>
             </div>
           </div>
           
@@ -784,16 +796,15 @@
       const estimatedDeathAge = parseInt(document.getElementById('life-expectancy-age').textContent);
       
       // Update counter (digital LCD style)
-      document.getElementById('counter-years').textContent = String(years).padStart(2, '0');
-      document.getElementById('counter-days').textContent = String(days).padStart(3, '0');
-      document.getElementById('counter-hours').textContent = String(hours).padStart(2, '0');
-      document.getElementById('counter-mins').textContent = String(mins).padStart(2, '0');
-      document.getElementById('counter-secs').textContent = String(secs).padStart(2, '0');
+      document.getElementById('counter-years').textContent = String(years);
+      document.getElementById('counter-days').textContent = String(days);
+      document.getElementById('counter-hours').textContent = String(hours);
+      document.getElementById('counter-mins').textContent = String(mins);
+      document.getElementById('counter-secs').textContent = String(secs);
       
       // Update bars - same stopwatch logic
       // Years bar: years remaining out of total life expectancy
       document.getElementById('bar-years-val').textContent = years;
-      document.getElementById('bar-years-max').textContent = estimatedDeathAge;
       document.getElementById('bar-years-fill').style.width = `${(years / estimatedDeathAge) * 100}%`;
       
       // Days bar: days remaining within current year (out of 365)
@@ -811,6 +822,21 @@
       // Seconds bar: seconds remaining within current minute (out of 60)
       document.getElementById('bar-secs-val').textContent = secs;
       document.getElementById('bar-secs-fill').style.width = `${(secs / 60) * 100}%`;
+
+      // Dynamic column width: size to widest current value so labels stay aligned
+      const maxDigits = Math.max(
+        String(years).length,
+        String(days).length,
+        String(hours).length,
+        String(mins).length,
+        String(secs).length
+      );
+      document.getElementById('stopwatch-bars').style.setProperty('--val-width', `${maxDigits}ch`);
+
+      // Battery header: percent of life remaining + icon fill width
+      const lifePercent = Math.max(0, Math.min(100, (years / estimatedDeathAge) * 100));
+      document.getElementById('battery-percent').textContent = `${Math.round(lifePercent)}%`;
+      document.getElementById('battery-icon-fill').setAttribute('width', String((lifePercent / 100) * 18));
     }
 
     function setActiveTab(activeId) {
