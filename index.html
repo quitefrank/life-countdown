@@ -12,6 +12,75 @@
       font-style: normal;
       font-display: swap;
     }
+    #launch-screen {
+      position: fixed;
+      inset: 0;
+      background: #000;
+      z-index: 1000;
+      display: none;
+      align-items: center;
+      justify-content: center;
+      padding: clamp(24px, 5vh, 56px) 24px;
+      overflow-y: auto;
+    }
+    .launch-inner {
+      width: 100%;
+      max-width: 640px;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      text-align: center;
+      gap: clamp(20px, 4vh, 40px);
+    }
+    .launch-headline,
+    .launch-subhead,
+    .launch-cta-text {
+      color: #fff;
+      display: block;
+      width: auto;
+      height: auto;
+    }
+    .launch-headline {
+      height: 124px;
+    }
+    .launch-subhead {
+      height: 50px;
+      margin-top: clamp(-12px, -2vh, -8px);
+    }
+    .launch-cta-text {
+      color: #000;
+      height: 13px;
+    }
+    .launch-skull {
+      width: 300px;
+      max-width: 100%;
+      height: auto;
+      display: block;
+      user-select: none;
+      -webkit-user-drag: none;
+      pointer-events: none;
+    }
+    .launch-cta {
+      background: #fff;
+      color: #000;
+      border: none;
+      border-radius: 999px;
+      padding: 18px 56px;
+      cursor: pointer;
+      transition: transform 0.15s ease, opacity 0.15s ease;
+      flex: none;
+      width: auto;
+      min-width: 240px;
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+    }
+    .launch-cta:hover {
+      opacity: 0.92;
+    }
+    .launch-cta:active {
+      transform: scale(0.97);
+    }
     * {
       margin: 0;
       padding: 0;
@@ -84,7 +153,18 @@
       border-radius: 8px;
       font-family: inherit;
     }
-    
+
+    select {
+      appearance: none;
+      -webkit-appearance: none;
+      -moz-appearance: none;
+      background-image: url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' width='12' height='8' viewBox='0 0 12 8'><path d='M1 1.5 6 6.5 11 1.5' fill='none' stroke='%231a1a1a' stroke-width='1.5' stroke-linecap='round' stroke-linejoin='round'/></svg>");
+      background-repeat: no-repeat;
+      background-position: right 0.75rem center;
+      background-size: 12px 8px;
+      padding-right: calc(0.75rem + 12px + 0.75rem);
+    }
+
     input:focus, select:focus {
       outline: none;
       border-color: #378ADD;
@@ -241,9 +321,18 @@
   </style>
 </head>
 <body>
+  <div id="launch-screen">
+    <div class="launch-inner">
+      <svg class="launch-headline" xmlns="http://www.w3.org/2000/svg" viewBox="51 -728 1620 734" aria-label="Face it"><path d="M51 0H117V-347H221V-403H117V-666H226V-722H51ZM510 0H576L470 -722H380L274 0H340L367 -200H483ZM476 -256H374L424 -672H426ZM782 -533H848V-628C848 -689 814 -728 745 -728C676 -728 642 -689 642 -628V-94C642 -33 676 6 745 6C814 6 848 -33 848 -94V-197H782V-96C782 -65 771 -50 745 -50C719 -50 708 -65 708 -96V-626C708 -657 719 -672 745 -672C771 -672 782 -657 782 -626ZM920 0H1095V-56H986V-347H1090V-403H986V-666H1095V-722H920ZM1317 0H1383V-722H1317ZM1531 0H1597V-666H1671V-722H1457V-666H1531Z" fill="currentColor"/></svg>
+      <svg class="launch-subhead" xmlns="http://www.w3.org/2000/svg" viewBox="9 -728 4017 734" aria-label="You're going to"><path d="M140 -394H138L75 -722H9L106 -314V0H172V-314L269 -722H203ZM329 -116C329 -45 356 6 445 6C534 6 561 -45 561 -116V-606C561 -677 534 -728 445 -728C356 -728 329 -677 329 -606ZM395 -604C395 -644 403 -672 445 -672C487 -672 495 -644 495 -604V-118C495 -78 487 -50 445 -50C403 -50 395 -78 395 -118ZM829 -118C829 -66 813 -50 779 -50C746 -50 729 -66 729 -118V-722H663V-97C663 -17 723 6 778 6C835 6 895 -17 895 -97V-722H829ZM975 -558H1029L1085 -722H1011ZM1231 -403V-666H1268C1302 -666 1324 -659 1324 -617V-455C1324 -412 1306 -403 1275 -403ZM1327 0H1393V-309C1393 -359 1365 -373 1318 -376V-378C1369 -381 1390 -400 1390 -456V-639C1390 -711 1351 -722 1288 -722H1165V0H1231V-347H1275C1306 -347 1327 -338 1327 -303ZM1498 0H1673V-56H1564V-347H1668V-403H1564V-666H1673V-722H1498ZM2007 -298H2060V-60C2051 -54 2034 -50 2016 -50C1993 -50 1964 -63 1964 -122V-605C1964 -645 1974 -672 2012 -672C2050 -672 2060 -645 2060 -605V-533H2126V-614C2126 -689 2084 -728 2012 -728C1940 -728 1898 -689 1898 -614V-121C1898 -38 1931 6 2022 6C2056 6 2091 -2 2126 -16V-354H2007ZM2228 -116C2228 -45 2255 6 2344 6C2433 6 2460 -45 2460 -116V-606C2460 -677 2433 -728 2344 -728C2255 -728 2228 -677 2228 -606ZM2294 -604C2294 -644 2302 -672 2344 -672C2386 -672 2394 -644 2394 -604V-118C2394 -78 2386 -50 2344 -50C2302 -50 2294 -78 2294 -118ZM2562 0H2628V-722H2562ZM2906 -104H2904L2823 -722H2727V0H2785V-642H2787L2870 0H2964V-722H2906ZM3175 -298H3228V-60C3219 -54 3202 -50 3184 -50C3161 -50 3132 -63 3132 -122V-605C3132 -645 3142 -672 3180 -672C3218 -672 3228 -645 3228 -605V-533H3294V-614C3294 -689 3252 -728 3180 -728C3108 -728 3066 -689 3066 -614V-121C3066 -38 3099 6 3190 6C3224 6 3259 -2 3294 -16V-354H3175ZM3580 0H3646V-666H3720V-722H3506V-666H3580ZM3794 -116C3794 -45 3821 6 3910 6C3999 6 4026 -45 4026 -116V-606C4026 -677 3999 -728 3910 -728C3821 -728 3794 -677 3794 -606ZM3860 -604C3860 -644 3868 -672 3910 -672C3952 -672 3960 -644 3960 -604V-118C3960 -78 3952 -50 3910 -50C3868 -50 3860 -78 3860 -118Z" fill="currentColor"/></svg>
+      <img class="launch-skull" src="assets/Skull-Emoji%201.png" alt="">
+      <button type="button" id="launch-cta" class="launch-cta" aria-label="Find out when"><svg class="launch-cta-text" xmlns="http://www.w3.org/2000/svg" viewBox="69 -722 6752 741" aria-hidden="true"><path d="M69 0H224V-308H514V-428H224V-606H535V-722H69ZM616 -593H774V-722H616ZM621 0H769V-506H621ZM901 0H1050V-296C1050 -335 1059 -360 1068 -373C1084 -397 1113 -412 1145 -412C1183 -412 1206 -391 1217 -369C1225 -353 1225 -335 1225 -314V0H1376V-273C1376 -367 1373 -393 1362 -424C1349 -459 1307 -519 1208 -519C1098 -519 1058 -454 1044 -431L1040 -507H898C901 -472 901 -417 901 -415ZM1844 -443C1831 -461 1793 -512 1702 -512C1570 -512 1479 -408 1479 -241C1479 -83 1559 10 1694 10C1716 10 1755 8 1792 -16C1823 -36 1833 -55 1843 -73L1847 0H1997C1995 -19 1993 -52 1993 -82V-722H1844ZM1629 -245C1629 -296 1640 -415 1739 -415C1806 -415 1849 -361 1849 -262C1849 -237 1847 -185 1825 -143C1809 -112 1774 -86 1731 -86C1657 -86 1629 -161 1629 -245ZM2376 -248C2376 -71 2490 18 2634 18C2817 18 2899 -110 2899 -252C2899 -393 2820 -517 2637 -517C2438 -517 2376 -370 2376 -248ZM2528 -247C2528 -293 2529 -418 2637 -418C2735 -418 2748 -325 2748 -258C2748 -124 2704 -85 2639 -85C2566 -85 2528 -134 2528 -247ZM3005 -505V-191C3005 -166 3005 -96 3038 -55C3066 -18 3122 13 3190 13C3286 13 3324 -45 3339 -67L3344 0H3488C3486 -14 3485 -23 3484 -37C3484 -50 3483 -63 3481 -172V-505H3329V-250C3329 -164 3329 -93 3234 -93C3155 -93 3155 -160 3155 -204V-505ZM3918 -104C3900 -102 3890 -101 3868 -101C3802 -101 3802 -130 3801 -176V-404H3921V-502H3801V-655L3654 -601V-502H3557V-404H3654V-127C3654 -85 3654 9 3803 9C3827 9 3870 6 3918 -7ZM4228 -505 4393 0H4556L4662 -374L4766 0H4927L5100 -505H4953L4854 -124L4748 -505H4585L4478 -124L4385 -505ZM5181 0H5330L5329 -309C5329 -388 5382 -412 5424 -412C5507 -412 5507 -331 5507 -302V0H5654V-307C5654 -373 5639 -419 5621 -444C5597 -475 5549 -512 5474 -512C5382 -512 5345 -460 5328 -436V-722H5181ZM6246 -215C6248 -257 6250 -331 6216 -400C6170 -494 6084 -522 6012 -522C5957 -522 5909 -506 5870 -480C5785 -421 5765 -323 5765 -241C5765 -160 5784 -92 5830 -44C5883 11 5965 19 6008 19C6082 19 6148 -1 6185 -40C6226 -83 6231 -126 6233 -150H6098C6084 -94 6047 -80 6010 -80C5907 -80 5907 -182 5907 -215ZM5912 -308C5915 -367 5942 -421 6007 -421C6093 -421 6095 -331 6095 -308ZM6346 0H6495V-296C6495 -335 6504 -360 6513 -373C6529 -397 6558 -412 6590 -412C6628 -412 6651 -391 6662 -369C6670 -353 6670 -335 6670 -314V0H6821V-273C6821 -367 6818 -393 6807 -424C6794 -459 6752 -519 6653 -519C6543 -519 6503 -454 6489 -431L6485 -507H6343C6346 -472 6346 -417 6346 -415Z" fill="currentColor"/></svg></button>
+    </div>
+  </div>
+
   <div class="container">
     <div id="quiz-container">
-      <form id="quiz-form">
+      <form id="quiz-form" style="display: none;">
         <div class="progress">
           <div class="progress-info">
             <span id="progress-text">Question 1 of 18</span>
@@ -361,9 +450,9 @@
           <p id="grid-summary" style="font-size: 12px; color: #888; margin: 0 0 1rem 0; line-height: 1.5;">You've lived <strong id="grid-summary-lived">0</strong> of an estimated <strong id="grid-summary-total">0</strong> <span id="grid-summary-unit">years</span> <span id="grid-summary-percent" style="color: #FF375F;">(0%)</span></p>
           
           <div style="display: flex; gap: 6px; margin-bottom: 1rem;">
-            <button type="button" class="grid-btn active" data-view="years" style="padding: 0.4rem 0.75rem; font-size: 12px; border: 0.5px solid #378ADD; background: #f0f4f8; border-radius: 6px; cursor: pointer; flex: 1; font-weight: 500;">Years</button>
+            <button type="button" class="grid-btn active" data-view="weeks" style="padding: 0.4rem 0.75rem; font-size: 12px; border: 0.5px solid #378ADD; background: #f0f4f8; border-radius: 6px; cursor: pointer; flex: 1; font-weight: 500;">Weeks</button>
             <button type="button" class="grid-btn" data-view="months" style="padding: 0.4rem 0.75rem; font-size: 12px; border: 0.5px solid #d0d0d0; background: white; border-radius: 6px; cursor: pointer; flex: 1;">Months</button>
-            <button type="button" class="grid-btn" data-view="weeks" style="padding: 0.4rem 0.75rem; font-size: 12px; border: 0.5px solid #d0d0d0; background: white; border-radius: 6px; cursor: pointer; flex: 1;">Weeks</button>
+            <button type="button" class="grid-btn" data-view="years" style="padding: 0.4rem 0.75rem; font-size: 12px; border: 0.5px solid #d0d0d0; background: white; border-radius: 6px; cursor: pointer; flex: 1;">Years</button>
           </div>
 
           <div id="grid-tooltip" style="position: fixed; background: #1a1a1a; color: white; padding: 6px 10px; border-radius: 6px; font-size: 11px; pointer-events: none; opacity: 0; transition: opacity 0.15s; z-index: 100; white-space: nowrap;"></div>
@@ -439,7 +528,7 @@
     const answers = JSON.parse(localStorage.getItem('lifeCalcAnswers')) || {};
     let deathDate = null;
     let currentFormat = 'hours-minutes-seconds';
-    let gridView = 'years';
+    let gridView = 'weeks';
     let drillDownYear = null;
     let drillDownMonth = null;
 
@@ -478,19 +567,20 @@
       } else if (q.type === 'select') {
         input = document.createElement('select');
         input.id = q.id;
-        input.value = answers[q.id] || '';
-        
+
         const placeholder = document.createElement('option');
         placeholder.value = '';
         placeholder.textContent = 'Select an option...';
         input.appendChild(placeholder);
-        
+
         q.options.forEach(opt => {
           const option = document.createElement('option');
           option.value = opt;
           option.textContent = opt;
           input.appendChild(option);
         });
+
+        input.value = answers[q.id] || '';
       } else if (q.type === 'number') {
         input = document.createElement('input');
         input.type = 'number';
@@ -1606,7 +1696,7 @@
       
       if (['ArrowLeft', 'ArrowRight', 'ArrowUp', 'ArrowDown'].includes(e.key)) {
         e.preventDefault();
-        const views = ['years', 'months', 'weeks'];
+        const views = ['weeks', 'months', 'years'];
         const currentIdx = views.indexOf(gridView);
         if (e.key === 'ArrowRight' && currentIdx < views.length - 1) {
           gridView = views[currentIdx + 1];
@@ -1695,6 +1785,12 @@
       }, 200);
     });
 
+    document.getElementById('launch-cta').addEventListener('click', () => {
+      document.getElementById('launch-screen').style.display = 'none';
+      document.getElementById('quiz-form').style.display = 'block';
+      renderQuestion();
+    });
+
     // Check if we have all answers
     const allAnswered = questions.every(q => answers[q.id]);
     if (allAnswered) {
@@ -1705,8 +1801,7 @@
       // Update countdown every second
       setInterval(updateCountdown, 1000);
     } else {
-      document.getElementById('quiz-form').style.display = 'block';
-      renderQuestion();
+      document.getElementById('launch-screen').style.display = 'flex';
     }
   </script>
 </body>
