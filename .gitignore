@@ -3,3 +3,6 @@ CLAUDE.md
 node_modules/
 .DS_Store
 assets/fonts/
+
+# capture log; system of record is ~/Case Study Vault (mirrored + pushed there)
+case-study-raw.md
